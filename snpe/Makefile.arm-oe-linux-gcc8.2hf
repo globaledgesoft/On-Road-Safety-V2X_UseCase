@@ -1,0 +1,55 @@
+# Copyright (c) 2017 Qualcomm Technologies, Inc.
+# All Rights Reserved.
+# Confidential and Proprietary - Qualcomm Technologies, Inc.
+
+# Change <PATH_TO> to proper required path
+
+# Specify the compiler flags
+#CXX ?= g++
+
+CXXFLAGS += -std=c++11 -fPIC 
+
+
+# Include paths
+INCLUDES += -I <PATH_TO>/snpe-1.59.0.3230/include/zdl -I include -I opencv/include -I <PATH_TO>/anaconda3/envs/py35/include/python3.5m -I <PATH_TO>/anaconda3/envs/py35/include/python3.5m/ -I <PATH_TO>/anaconda3/envs/py35/lib/python3.5/site-packages/pybind11/include 
+
+# Specify the paths to the libraries
+LDFLAGS  += -L <PATH_TO>/snpe-1.59.0.3230/lib/arm-oe-linux-gcc8.2hf -L opencv/lib 
+
+
+# Specify the link libraries
+
+#LLIBS    += -lSNPE -lopencv_videoio -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_imgcodecs -lgphoto2 -lgphoto2_port
+LLIBS    += -lSNPE `pkg-config --cflags --libs opencv` 
+
+
+# Specify the target
+PROGRAM  := qcsnpe.so
+SRC_DIR  := src
+OBJ_DIR  := obj/local/arm-oe-linux-gcc8.2hf
+
+# Specify the source list and the object directories.
+# The source file is in the 'jni' directory to be compatible with the
+# Android NDK structure.
+# Get the list of source files including the directory
+SRC      := $(wildcard $(SRC_DIR)/*.cpp)
+# Generate the output names by substituting the object dir for the source dir
+OBJS     := $(subst $(SRC_DIR),$(OBJ_DIR),$(subst .cpp,.o,$(SRC)))
+
+default: all
+all: $(OBJ_DIR)/$(PROGRAM)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(OBJ_DIR)
+	$(CXX) -c $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+$(OBJ_DIR)/$(PROGRAM): $(OBJS)
+	$(CXX) --shared $(LDFLAGS) $^ $(LLIBS) -o $@
+
+clean:
+	-rm -f $(OBJS) $(PROGRAM).o
+	-rm -f $(PROGRAM)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+.PHONY: default clean

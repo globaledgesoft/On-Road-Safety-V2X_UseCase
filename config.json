@@ -1,0 +1,14 @@
+{
+    "camera_id": "camera_1",
+    "model_path": "yolo_v3.dlc",
+    "filename": "timestamp.json",
+    "aws_region":"ap-south-1" ,
+    "aws_accesskey":"",
+    "aws_secretekey":"",
+    "in_bucket": "inbuc",
+    "out_bucket": "outbuc",    
+    "camera_pipeline": "qtiqmmfsrc ldc=TRUE name=qmmf ! video/x-h264,width=640,height=480,framerate=25/1  ! h264parse ! video/x-h264, stream-format=avc, alignment=au ! kvssink stream-name=qcs610video storage-size=512 access-key=xxxxxxxxxxxx secret-key=xxxxxxxx aws-region=xxxx qmmf. !video/x-raw, format=NV12, width=1280, height=720, framerate=30/1 ! videoconvert ! appsink "
+}
+
+
+
